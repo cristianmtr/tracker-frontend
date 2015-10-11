@@ -12,8 +12,8 @@ const newItemForModal = {
     'responsible': '',
     'description': '',
     'author': '',
-    'tasklist': "General OPS",
-}
+    'tasklist': "General OPS"
+};
 
 var globalDataSources;
 
@@ -45,7 +45,7 @@ function logOut() {
     var dataToSubmit = JSON.stringify(
         {
             "username": docCookies.getItem("username"),
-            "token": docCookies.getItem("token"),
+            "token": docCookies.getItem("token")
         }
     );
     $.ajax({
@@ -53,15 +53,15 @@ function logOut() {
         type: 'POST',
         data: dataToSubmit,
         contentType: "application/json; charset=utf-8",
-        success: logoutSuccessCallback,
+        success: logoutSuccessCallback
     });
-};
+}
 
 function prepareModalForNewTask() {
     currentItemId = -1;
     setDataInModal(newItemForModal);
     $("#content").hide();
-};
+}
 
 function setUItoLoggedIn() {
     username = docCookies.getItem("username");
@@ -135,7 +135,7 @@ function submitTaskSuccessCallback(response, thisItemId, dataToSubmit) {
             // we have updated an existing task
             setDataInRowById(thisItemId, dataToSubmit);
         }
-        ;
+
     }
     else if (response['code'] === 401) {
         alertModal("Not logged in");
@@ -160,14 +160,14 @@ function submitTaskFromModal() {
         'tasklist': $('#tasklist').val(),
         'description': $('#description').val(),
         'responsible': $('#responsible').val(),
-        'author': $('#author').val(),
+        'author': $('#author').val()
     };
     var dataToSubmit = JSON.stringify(
         {
             'data': data,
             'auth': {
-                'token': docCookies.getItem('token'),
-            },
+                'token': docCookies.getItem('token')
+            }
         }
     );
     var url = "/task/";
@@ -203,23 +203,18 @@ function replaceIdsWithValues(dataObject) {
     if (responsible_id != null) {
         dataObject['responsible'] = dataSources['responsible'][responsible_id];
     }
-    ;
     if (author_id != null) {
         dataObject['author'] = dataSources['responsible'][author_id];
     }
-    ;
     if (tasklist_id != null) {
         dataObject['tasklist'] = dataSources['tasklist'][tasklist_id];
     }
-    ;
     if (priority != null) {
         dataObject['priority'] = dataSources['priority'][priority];
     }
-    ;
     return dataObject;
 
-};
-
+}
 
 function addTextFieldsFromIds(dataObject, field) {
     var dataSource = null;
@@ -253,7 +248,7 @@ function idExistsInTableRows(idToCheck) {
         return false;
     }
     return true;
-};
+}
 
 function setAdditionalIDField(dataObject) {
     // WORKAROUND: dataTables does not read the ID field
@@ -273,7 +268,7 @@ function addNewRow(newTaskId, jsonDataObject) {
     jsonDataObject = prepareTaskRowFromDb(jsonDataObject, newTaskId);
     table.row.add(jsonDataObject);
     table.draw();
-};
+}
 
 function setDataInRowById(DT_RowId, dataObject) {
     dataObject = addValueFieldsToRowObject(dataObject);
@@ -281,7 +276,7 @@ function setDataInRowById(DT_RowId, dataObject) {
     dataObject = setAdditionalIDField(dataObject);
     console.log("trying to update row " + DT_RowId + " with data " + JSON.stringify(dataObject));
     table.row("#" + DT_RowId).data(dataObject);
-};
+}
 
 function iterateDataSources() {
     for (var key in globalDataSources) {
@@ -295,7 +290,7 @@ function iterateDataSources() {
             }
         }
     }
-};
+}
 
 function onClickTableRow(e) {
     currentItemId = e.id;
@@ -303,7 +298,7 @@ function onClickTableRow(e) {
     updateDataInModalFromId();
     toggleModal();
     $("#content").show();
-};
+}
 
 function replaceValuesWithIds(modalDataObject) {
     var thisPriority = modalDataObject['priority'];
@@ -372,11 +367,11 @@ function updateDataInModalFromId() {
             fillHistorySection(historyEntries);
         }
     });
-};
+}
 
 function toggleModal() {
     $("#createNewModal").modal('toggle');
-};
+}
 
 function setDataInModal(modalDataObject) {
     $('#priority').val(modalDataObject["priority"]);
@@ -386,7 +381,7 @@ function setDataInModal(modalDataObject) {
     $('#description').val(modalDataObject['description']);
     $("#responsible").val(modalDataObject["responsible"]);
     console.log('data modal has been updated with ' + JSON.stringify(modalDataObject));
-};
+}
 
 function getPriorityIDfromValue(priority) {
     for (var x in dataSources['priority']) {
@@ -452,7 +447,7 @@ function initializeEditables() {
     generateSelectOptionsForTasklist();
 
     generateSelectOptionsForResponsible();
-};
+}
 
 function fillCommentSection(comments) {
     var commentsContainer = $("#commentsList");
@@ -463,8 +458,8 @@ function fillCommentSection(comments) {
         commentsContainer.append(cmdiv);
         //(cmdiv);
     }
-    ;
-};
+
+}
 
 function fillHistorySection(historyEntries) {
     var historyContainer = $("#historyList");
@@ -475,8 +470,8 @@ function fillHistorySection(historyEntries) {
         hsdiv += '</div>';
         historyContainer.append(hsdiv);
     }
-    ;
-};
+
+}
 
 function checkTokenAndUsernameCombinationCallback(response) {
     if (response['code'] === 200) {
@@ -492,7 +487,7 @@ function checkTokenAndUsernameCombination() {
     var dataToSubmit = JSON.stringify(
         {
             "username": docCookies.getItem("username"),
-            "token": docCookies.getItem("token"),
+            "token": docCookies.getItem("token")
         }
     );
     $.ajax({
@@ -500,7 +495,7 @@ function checkTokenAndUsernameCombination() {
         type: 'POST',
         data: dataToSubmit,
         contentType: "application/json; charset=utf-8",
-        success: checkTokenAndUsernameCombinationCallback,
+        success: checkTokenAndUsernameCombinationCallback
     });
 }
 
@@ -544,7 +539,7 @@ $(document).ready(function () {
         , shadow: true // Whether to render a shadow
         , hwaccel: true // Whether to use hardware acceleration
         , position: 'absolute' // Element positioning
-    }
+    };
     var target = document.getElementById('foo');
     var spinner = new Spinner(opts).spin(target);
     $("body").addClass("loading");
@@ -606,7 +601,6 @@ $(document).ready(function () {
         });
 
         globalDataSources = dataSources;
-
         initializeEditables();
         checkForTokenCookie();
 
