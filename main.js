@@ -260,7 +260,7 @@ function setAdditionalIDField(dataObject) {
 function prepareTaskRowFromDb(jsonDataObject, newTaskId) {
     jsonDataObject = addValueFieldsToRowObject(jsonDataObject);
     jsonDataObject['DT_RowId'] = newTaskId;
-    jsonDataObject = setAdditionalIDField(jsonDataObject);
+    //jsonDataObject = setAdditionalIDField(jsonDataObject);
     return jsonDataObject;
 }
 
@@ -564,13 +564,13 @@ $(document).ready(function () {
         dataSources = data['dataSources'];
         dataSet = data['data'];
         for (var i in dataSet) {
-            dataSet[i] = prepareTaskRowFromDb(dataSet[i], dataSet[i]['DT_RowId']);
+            dataSet[i] = prepareTaskRowFromDb(dataSet[i], dataSet[i]['itemId']);
         }
         table = $('#example').DataTable({
             "dom": 'C<"clear"><"toolbar">lfrtip',
             "data": dataSet,
             "columns": [
-                {"data": "ID"},
+                {"data": "itemId"},
                 {"data": "title"},
                 {"data": "description"},
                 {"data": "deadline"},
