@@ -5,6 +5,9 @@ var table;
 // should be a specific id for an existing item if it's an UPDATE
 var currentItemId = -1;
 
+// used in login process
+var logInProcess = false;
+
 const newItemForModal = {
     'title': '',
     'deadline': new moment().format("YYYY-MM-DD"),
@@ -76,40 +79,42 @@ function setUItoLoggedIn() {
 function authenticationResponseHandler(response, username) {
     console.log(JSON.stringify(response));
     console.log(response);
-    if (response['code'] == 200) {
-        $("#authModal").modal("hide");
-        // as per server, it's 14 days
-        var expirationDate = new Date();
-        expirationDate.setDate(expirationDate.getDate() + 14);
-        //TODO change last parameter (https only) to true
-        docCookies.setItem("token", response['data']['token'], expirationDate.toGMTString(), null, null, null);
-        docCookies.setItem("username", username);
-        setUItoLoggedIn();
+    $("#authModal").modal("hide");
+    docCookies.setItem("token", response['token'], null, null, null, true);
+    docCookies.setItem("username", username);
+    setUItoLoggedIn();
+    if (logInProcess === true) {
+        //$("#authModal").data('modal').options.keyboard = true;
+        //$("#authModal").data('modal').options.backdrop = true;
+        //$("#authModal").modal({
+        //    backdrop: true,
+        //    keyboard: true
+        //});
+        logInProcess = false;
+        loadDocument();
     }
-    else {
-        // add some red text html to the modal
-        // saying 'try again'
-        $("#authmessage").text("Failure. Try again");
-    }
+
 }
 
 function tryAuthenticate() {
     var username = $("#username").val();
     var password = $("#password").val();
-    var dataToSubmit = JSON.stringify(
-        {
-            'username': username,
-            'password': password
-        }
-    );
+    var encoded = btoa(username + ":" + password);
+    console.log(encoded);
     $("#authmessage").text("");
     $.ajax({
-        url: '/auth',
-        type: 'POST',
-        data: dataToSubmit,
+        url: '/users/token',
+        type: 'GET',
         contentType: "application/json; charset=utf-8",
+        headers: {"Authorization": "Basic " + encoded},
         success: function (response) {
             authenticationResponseHandler(response, username);
+        },
+        error: function (xhr, textStatus, thrownError) {
+            // add some red text html to the modal
+            // saying 'try again'
+            console.log(xhr, textStatus, thrownError);
+            $("#authmessage").text("Failure. Try again");
         }
     });
 }
@@ -149,8 +154,7 @@ function submitTaskFromModal() {
     var thisItemId = currentItemId;
     //validate if deadline field is empty or invalid data
     var deadline_in_form = $('#deadline').data("DateTimePicker").date();
-    if ( deadline_in_form !== null && deadline_in_form !== "" )
-    {
+    if (deadline_in_form !== null && deadline_in_form !== "") {
         deadline_in_form = deadline_in_form.format("YYYY-MM-DD");
     }
     var data = {
@@ -244,10 +248,8 @@ function addValueFieldsToRowObject(dataObject) {
 }
 
 function idExistsInTableRows(idToCheck) {
-    if (table.row("#" + idToCheck).data() == undefined) {
-        return false;
-    }
-    return true;
+    return table.row("#" + idToCheck).data() != undefined;
+
 }
 
 function setAdditionalIDField(dataObject) {
@@ -328,17 +330,17 @@ function replaceValuesWithIds(modalDataObject) {
             modalDataObject['priority'] = i;
         }
     }
-    for (var i in dataSources['tasklist']) {
-        if (dataSources['tasklist'][i] === thisTasklist) {
-            modalDataObject['tasklist'] = i;
+    for (var j in dataSources['tasklist']) {
+        if (dataSources['tasklist'][j] === thisTasklist) {
+            modalDataObject['tasklist'] = j;
         }
     }
-    for (var i in dataSources['responsible']) {
-        if (dataSources['responsible'][i] === thisResponsible) {
-            modalDataObject['responsible'] = i;
+    for (var k in dataSources['responsible']) {
+        if (dataSources['responsible'][k] === thisResponsible) {
+            modalDataObject['responsible'] = k;
         }
-        if (dataSources['responsible'][i] === thisAuthor) {
-            modalDataObject['author'] = i;
+        if (dataSources['responsible'][k] === thisAuthor) {
+            modalDataObject['author'] = k;
         }
     }
     return modalDataObject;
@@ -516,7 +518,64 @@ function loadRowsFromDataSet(dataSet) {
     }
 }
 
-$(document).ready(function () {
+function onGetInitSuccess(data) {
+    // Setup - add a text input to each footer cell
+    // but they become header cells due to the CSS added in index.html
+    //   <tfoot style="display: table-header-group;">
+    $('#example tfoot th').each(function () {
+        var title = $('#example thead th').eq($(this).index()).text();
+        $(this).html('<input style="width: 100%;" type="text" placeholder="search..." />');
+    });
+
+    console.log('got data from /init');
+    dataSources = data['dataSources'];
+    dataSet = data['data'];
+    for (var i in dataSet) {
+        dataSet[i] = prepareTaskRowFromDb(dataSet[i], dataSet[i]['itemId']);
+    }
+    table = $('#example').DataTable({
+        "dom": 'C<"clear"><"toolbar">lfrtip',
+        "data": dataSet,
+        "columns": [
+            {"data": "itemId"},
+            {"data": "title"},
+            {"data": "description"},
+            {"data": "deadline"},
+            {"data": "responsible_text"},
+            {"data": "author_text"},
+            {"data": "tasklist_text"},
+            {"data": "priority_text"}
+        ],
+        "order": [[3, "desc"]]
+    });
+
+    $("div.toolbar").html('<button id="userstatus" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#authModal">Not logged in</button><div id="otherdiv"></div>');
+
+    setUItoLoggedIn();
+
+    //on click functionality
+    $('#example tbody').on('click', 'tr', function () {
+        onClickTableRow(this);
+    });
+
+    // Apply the search
+    table.columns().every(function () {
+        var that = this;
+
+        $('input', this.footer()).on('keyup ', function () {
+            that
+                .search(this.value)
+                .draw();
+        });
+    });
+
+    globalDataSources = dataSources;
+    initializeEditables();
+
+    $("body").removeClass("loading");
+};
+
+function loadDocument() {
 
     var opts = {
         lines: 13 // The number of lines to draw
@@ -544,68 +603,40 @@ $(document).ready(function () {
     var spinner = new Spinner(opts).spin(target);
     $("body").addClass("loading");
 
-    // Setup - add a text input to each footer cell
-    // but they become header cells due to the CSS added in index.html
-    //   <tfoot style="display: table-header-group;">
-    $('#example tfoot th').each(function () {
-        var title = $('#example thead th').eq($(this).index()).text();
-        $(this).html('<input style="width: 100%;" type="text" placeholder="search..." />');
-    });
-
-    function loadData() {
-        return $.getJSON('/json');
-    }
-
-    //// init bootstrap tab menu in modal
-    //$('#modaltabs').tab();
-
-    $.when(loadData()).then(function (data) {
-        console.log('got data from /json');
-        dataSources = data['dataSources'];
-        dataSet = data['data'];
-        for (var i in dataSet) {
-            dataSet[i] = prepareTaskRowFromDb(dataSet[i], dataSet[i]['itemId']);
+    console.log("starting task load...");
+    $.ajax({
+        type: "GET",
+        url: "/init",
+        headers: {"Authorization": "Bearer " + docCookies.getItem('token')},
+        success: function (data) {
+            onGetInitSuccess(data);
+        },
+        error: function (xhr, textStatus, thrownError) {
+            console.log(xhr, textStatus, thrownError);
         }
-        table = $('#example').DataTable({
-            "dom": 'C<"clear"><"toolbar">lfrtip',
-            "data": dataSet,
-            "columns": [
-                {"data": "itemId"},
-                {"data": "title"},
-                {"data": "description"},
-                {"data": "deadline"},
-                {"data": "responsible_text"},
-                {"data": "author_text"},
-                {"data": "tasklist_text"},
-                {"data": "priority_text"}
-            ],
-            "order": [[3, "desc"]]
-        });
-
-        $("div.toolbar").html('<button id="userstatus" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#authModal">Not logged in</button><div id="otherdiv"></div>');
-
-        //on click functionality
-        $('#example tbody').on('click', 'tr', function () {
-            onClickTableRow(this);
-        });
-
-        // Apply the search
-        table.columns().every(function () {
-            var that = this;
-
-            $('input', this.footer()).on('keyup ', function () {
-                that
-                    .search(this.value)
-                    .draw();
-            });
-        });
-
-        globalDataSources = dataSources;
-        initializeEditables();
-        checkForTokenCookie();
-
-        $("body").removeClass("loading");
     });
+}
 
+function startLoginProc() {
+    logInProcess = true;
+    setUItoLoggedOut();
+    $("#authModal").modal({
+        backdrop: 'static',
+        keyboard: false
+    });
+    $("#authModal").modal("show");
+}
 
+function beforeLoadDocument() {
+    var token = docCookies.getItem("token");
+    // TODO token verify via send
+    if (token === "" || token === null) {
+        startLoginProc();
+    } else {
+        loadDocument();
+    }
+}
+
+$(document).ready(function () {
+    beforeLoadDocument();
 });
