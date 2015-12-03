@@ -244,6 +244,19 @@ function addValueFieldsToRowObject(dataObject) {
     for (var i in fields_to_check) {
         dataObject = addTextFieldsFromIds(dataObject, fields_to_check[i]);
     }
+    // should it be global?
+    function addUserDateFormatToRowObject(dataObject) {
+        var deadlinedate_text = "";
+        if (dataObject['deadlinedate'] !== null &&
+            dataObject['deadlinedate'] !== "") {
+            var date = new Date(dataObject['deadlinedate']);
+            deadlinedate_text = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
+        }
+        dataObject['deadlinedate'] = deadlinedate_text;
+        return dataObject;
+    }
+
+    dataObject = addUserDateFormatToRowObject(dataObject);
     return dataObject;
 }
 
@@ -260,6 +273,16 @@ function setAdditionalIDField(dataObject) {
 }
 
 function prepareTaskRowFromDb(jsonDataObject, newTaskId) {
+    //"columns": [
+    //    {"data": "id"},
+    //    {"data": "title"},
+    //    {"data": "description"},
+    //    {"data": "deadlinedate"},
+    //    {"data": "responsible_text"},
+    //    {"data": "author_text"},
+    //    {"data": "tasklist_text"},
+    //    {"data": "priority_text"}
+    //],
     jsonDataObject = addValueFieldsToRowObject(jsonDataObject);
     jsonDataObject['DT_RowId'] = newTaskId;
     //jsonDataObject = setAdditionalIDField(jsonDataObject);
