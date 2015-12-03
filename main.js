@@ -531,13 +531,13 @@ function onGetInitSuccess(data) {
     dataSources = data['dataSources'];
     dataSet = data['data'];
     for (var i in dataSet) {
-        dataSet[i] = prepareTaskRowFromDb(dataSet[i], dataSet[i]['itemId']);
+        dataSet[i] = prepareTaskRowFromDb(dataSet[i], dataSet[i]['id']);
     }
     table = $('#example').DataTable({
         "dom": 'C<"clear"><"toolbar">lfrtip',
         "data": dataSet,
         "columns": [
-            {"data": "itemId"},
+            {"data": "id"},
             {"data": "title"},
             {"data": "description"},
             {"data": "deadline"},
