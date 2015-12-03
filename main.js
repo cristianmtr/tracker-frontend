@@ -10,7 +10,7 @@ var logInProcess = false;
 
 const newItemForModal = {
     'title': '',
-    'deadline': new moment().format("YYYY-MM-DD"),
+    'deadlinedate': new moment().format("YYYY-MM-DD"),
     'priority': "Normal",
     'responsible': '',
     'description': '',
@@ -160,7 +160,7 @@ function submitTaskFromModal() {
     var data = {
         'title': $("#title").val(),
         'priority': $('#priority').val(),
-        'deadline': deadline_in_form,
+        'deadlinedate': deadline_in_form,
         'tasklist': $('#tasklist').val(),
         'description': $('#description').val(),
         'responsible': $('#responsible').val(),
@@ -377,7 +377,7 @@ function toggleModal() {
 
 function setDataInModal(modalDataObject) {
     $('#priority').val(modalDataObject["priority"]);
-    $('#deadline').data("DateTimePicker").date(modalDataObject['deadline']);
+    $('#deadline').data("DateTimePicker").date(modalDataObject['deadlinedate']);
     $("#tasklist").val(modalDataObject["tasklist"]);
     $("#title").val(modalDataObject["title"]);
     $('#description').val(modalDataObject['description']);
@@ -540,7 +540,7 @@ function onGetInitSuccess(data) {
             {"data": "id"},
             {"data": "title"},
             {"data": "description"},
-            {"data": "deadline"},
+            {"data": "deadlinedate"},
             {"data": "responsible_text"},
             {"data": "author_text"},
             {"data": "tasklist_text"},
