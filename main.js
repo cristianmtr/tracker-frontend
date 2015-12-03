@@ -1,6 +1,6 @@
 var table;
 
-// this will be used for submitting POST data to server
+// this will be used for submitsubmitting POST data to server
 // should be -1 if the item submitted is new (doesn't exist in db)
 // should be a specific id for an existing item if it's an UPDATE
 var currentItemId = -1;
@@ -124,32 +124,6 @@ function alertModal(message) {
     $("#alertModal").modal("toggle");
 }
 
-function submitTaskSuccessCallback(response, thisItemId, dataToSubmit) {
-    console.log(response);
-
-
-    if (response['code'] === 200) {
-        if (thisItemId === -1) {
-            // we have created a new task
-            // we get the id assigned to the newly
-            // created task from the response
-            thisItemId = response['data'];
-            addNewRow(thisItemId, dataToSubmit);
-        }
-        else {
-            // we have updated an existing task
-            setDataInRowById(thisItemId, dataToSubmit);
-        }
-
-    }
-    else if (response['code'] === 401) {
-        alertModal("Not logged in");
-    }
-    else {
-        alertModal("Something went wrong. Please try again later");
-    }
-}
-
 function submitTaskFromModal() {
     var thisItemId = currentItemId;
     //validate if deadline field is empty or invalid data
@@ -163,67 +137,98 @@ function submitTaskFromModal() {
         'deadlinedate': deadline_in_form,
         'projectid': $('#projectid').val(),
         'description': $('#description').val(),
-        'responsible': $('#responsible').val(),
+        'memberid': $('#responsible').val(),
         'author': $('#author').val()
     };
-    var dataToSubmit = JSON.stringify(
-        {
-            'data': data,
-            'auth': {
-                'token': docCookies.getItem('token')
-            }
-        }
-    );
+    var dataToSubmit = JSON.stringify(data);
     var url = "/tasks/";
     if (thisItemId !== -1) {
         url = "/tasks/" + thisItemId;
     }
-    console.log("submit to " + url);
+    console.log("submit to " + url + dataToSubmit);
+
+    function submitTaskSuccessCallback(response, textStatus, request, thisItemId, dataToSubmit) {
+        console.log(textStatus + " on submit task. " + JSON.stringify(response));
+
+        if (request.status === 201) {
+            if (thisItemId === -1) {
+                // we have created a new task
+                // we get the id assigned to the newly
+                // created task from the response
+                thisItemId = response['id'];
+                dataToSubmit['id'] = thisItemId;
+                dataToSubmit['authorid'] = dataSources['responsible'];
+                addNewRow(thisItemId, dataToSubmit);
+            }
+            else {
+                // we have updated an existing task
+                dataToSubmit['id'] = thisItemId;
+                setDataInRowById(thisItemId, dataToSubmit);
+            }
+
+        }
+    }
+
+    function submitTaskFail(xhr, textStatus, thrownError) {
+        if (xhr.status === 401) {
+            alertModal("Not logged in");
+        }
+        else if (xhr.status === 403) {
+            alertModal("No permission on that resource");
+        }
+        else {
+            alertModal("Something went wrong. Please try again later");
+        }
+    }
+
     $.ajax({
         url: url,
         type: 'POST',
         data: dataToSubmit,
         contentType: "application/json; charset=utf-8",
         headers: {"Authorization": "Bearer " + docCookies.getItem('token')},
-        success: function (response) {
-            submitTaskSuccessCallback(response, thisItemId, data);
+        success: function (response, textStatus, request) {
+            submitTaskSuccessCallback(response, textStatus, request, thisItemId, data);
+        },
+        error: function (xhr, textStatus, thrownError) {
+            submitTaskFail(xhr, textStatus, thrownError);
         }
     });
 }
 
 function replaceIdsWithValuesInDataSet(dataSet) {
+    function replaceIdsWithValues(dataObject) {
+        // we replace the ID numbers we get from the server
+        // with the names from the dictionary mapping we will store client-side
+        var responsible_id = dataObject['responsible'];
+        var author_id = dataObject['author'];
+        var projectid = dataObject['projectid'];
+        var priority = dataObject['priority'];
+        if (responsible_id != null) {
+            dataObject['responsible'] = dataSources['responsible'][responsible_id];
+        }
+        if (author_id != null) {
+            dataObject['author'] = dataSources['responsible'][author_id];
+        }
+        if (projectid != null) {
+            dataObject['projectid'] = dataSources['projectlist'][projectid];
+        }
+        if (priority != null) {
+            dataObject['priority'] = dataSources['priority'][priority];
+        }
+        return dataObject;
+
+    }
+
     for (var i = 0; i < dataSet.length; i++) {
         dataSet[i] = replaceIdsWithValues(dataSet[i]);
     }
     return dataSet;
 }
 
-function replaceIdsWithValues(dataObject) {
-    // we replace the ID numbers we get from the server
-    // with the names from the dictionary mapping we will store client-side
-    var responsible_id = dataObject['responsible'];
-    var author_id = dataObject['author'];
-    var projectid = dataObject['projectid'];
-    var priority = dataObject['priority'];
-    if (responsible_id != null) {
-        dataObject['responsible'] = dataSources['responsible'][responsible_id];
-    }
-    if (author_id != null) {
-        dataObject['author'] = dataSources['responsible'][author_id];
-    }
-    if (projectid != null) {
-        dataObject['projectid'] = dataSources['projectlist'][projectid];
-    }
-    if (priority != null) {
-        dataObject['priority'] = dataSources['priority'][priority];
-    }
-    return dataObject;
-
-}
-
 function addTextFieldsFromIds(dataObject, field) {
     var dataSource = null;
-    if (field == 'responsible' || field == 'author') {
+    if (field == 'memberid' || field == 'authorid') {
         dataSource = 'responsible';
     }
     else if (field == "projectid") {
@@ -247,7 +252,7 @@ function addTextFieldsFromIds(dataObject, field) {
 
 
 function addValueFieldsToRowObject(dataObject) {
-    var fields_to_check = ['responsible', 'author', 'projectid', 'priority'];
+    var fields_to_check = ['authorid', 'memberid', 'projectid', 'priority'];
     for (var i in fields_to_check) {
         dataObject = addTextFieldsFromIds(dataObject, fields_to_check[i]);
     }
@@ -394,7 +399,7 @@ function setDataInModal(modalDataObject) {
     $("#projectid").val(modalDataObject["projectid"]);
     $("#title").val(modalDataObject["title"]);
     $('#description').val(modalDataObject['description']);
-    $("#responsible").val(modalDataObject["responsible"]);
+    $("#responsible").val(modalDataObject["memberid"]);
     console.log('data modal has been updated with ' + JSON.stringify(modalDataObject));
 }
 
@@ -481,7 +486,7 @@ function fillHistorySection(historyEntries) {
     historyContainer.html("");
     for (var i in historyEntries) {
         var hsdiv = '<div class="row task-modal-list-item">';
-        hsdiv += "Set to " + parseInt(historyEntries[i].statuskey) * 20 + "% by " + dataSources['responsible'][historyEntries[i].memberid] + " at " +  new moment(historyEntries[i].statusDate).format("YYYY-MM-DD, HH:MM");
+        hsdiv += "Set to " + parseInt(historyEntries[i].statuskey) * 20 + "% by " + dataSources['responsible'][historyEntries[i].memberid] + " at " + new moment(historyEntries[i].statusDate).format("YYYY-MM-DD, HH:MM");
         hsdiv += '</div>';
         historyContainer.append(hsdiv);
     }
@@ -554,8 +559,8 @@ function onGetInitSuccess(data) {
             {"data": "title"},
             {"data": "description"},
             {"data": "deadlinedate"},
-            {"data": "responsible_text"},
-            {"data": "author_text"},
+            {"data": "memberid_text"},
+            {"data": "authorid_text"},
             {"data": "projectid_text"},
             {"data": "priority_text"}
         ],
