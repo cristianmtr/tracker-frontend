@@ -15,7 +15,7 @@ const newItemForModal = {
     'responsible': '',
     'description': '',
     'author': '',
-    'tasklist': "General OPS"
+    'projectid': "General OPS"
 };
 
 var globalDataSources;
@@ -161,7 +161,7 @@ function submitTaskFromModal() {
         'title': $("#title").val(),
         'priority': $('#priority').val(),
         'deadlinedate': deadline_in_form,
-        'tasklist': $('#tasklist').val(),
+        'projectid': $('#projectid').val(),
         'description': $('#description').val(),
         'responsible': $('#responsible').val(),
         'author': $('#author').val()
@@ -202,7 +202,7 @@ function replaceIdsWithValues(dataObject) {
     // with the names from the dictionary mapping we will store client-side
     var responsible_id = dataObject['responsible'];
     var author_id = dataObject['author'];
-    var tasklist_id = dataObject['tasklist'];
+    var projectid = dataObject['projectid'];
     var priority = dataObject['priority'];
     if (responsible_id != null) {
         dataObject['responsible'] = dataSources['responsible'][responsible_id];
@@ -210,8 +210,8 @@ function replaceIdsWithValues(dataObject) {
     if (author_id != null) {
         dataObject['author'] = dataSources['responsible'][author_id];
     }
-    if (tasklist_id != null) {
-        dataObject['tasklist'] = dataSources['tasklist'][tasklist_id];
+    if (projectid != null) {
+        dataObject['projectid'] = dataSources['projectlist'][projectid];
     }
     if (priority != null) {
         dataObject['priority'] = dataSources['priority'][priority];
@@ -225,11 +225,17 @@ function addTextFieldsFromIds(dataObject, field) {
     if (field == 'responsible' || field == 'author') {
         dataSource = 'responsible';
     }
+    else if (field == "projectid") {
+        dataSource = "projectlist";
+    }
     else {
         dataSource = field;
     }
     var id = dataObject[field];
-    var text = dataSources[dataSource][id];
+    var text = undefined;
+    if (id !== null && id != undefined) {
+        text = dataSources[dataSource][id];
+    }
     if (text === undefined) {
         text = "";
     }
@@ -240,7 +246,7 @@ function addTextFieldsFromIds(dataObject, field) {
 
 
 function addValueFieldsToRowObject(dataObject) {
-    var fields_to_check = ['responsible', 'author', 'tasklist', 'priority'];
+    var fields_to_check = ['responsible', 'author', 'projectid', 'priority'];
     for (var i in fields_to_check) {
         dataObject = addTextFieldsFromIds(dataObject, fields_to_check[i]);
     }
@@ -280,7 +286,7 @@ function prepareTaskRowFromDb(jsonDataObject, newTaskId) {
     //    {"data": "deadlinedate"},
     //    {"data": "responsible_text"},
     //    {"data": "author_text"},
-    //    {"data": "tasklist_text"},
+    //    {"data": "projectid_text"},
     //    {"data": "priority_text"}
     //],
     jsonDataObject = addValueFieldsToRowObject(jsonDataObject);
@@ -327,35 +333,18 @@ function onClickTableRow(e) {
 
 function replaceValuesWithIds(modalDataObject) {
     var thisPriority = modalDataObject['priority'];
-    var thisTasklist = modalDataObject['tasklist'];
+    var thisProjectid = modalDataObject['projectid'];
     var thisResponsible = modalDataObject['responsible'];
     var thisAuthor = modalDataObject['author'];
-    //for (var i=0;i<dataSources['priority'];i++) {
-    //    if (dataSources['priority'][i] == thisPriority) {
-    //        modalDataObject['priority'] = i;
-    //    }
-    //}
-    //for (var i=0;i<dataSources['tasklist'];i++) {
-    //    if (dataSources['tasklist'][i] == thisTasklist) {
-    //        modalDataObject['tasklist'] = i;
-    //    }
-    //}
-    //for (var i=0;i<dataSources['responsible'];i++) {
-    //    if (dataSources['responsible'][i] == thisResponsible) {
-    //        modalDataObject['responsible'] = i;
-    //    }
-    //    if (dataSources['responsible'][i] == thisAuthor) {
-    //        modalDataObject['author'] = i;
-    //    }
-    //}
+
     for (var i in dataSources['priority']) {
         if (dataSources['priority'][i] === thisPriority) {
             modalDataObject['priority'] = i;
         }
     }
-    for (var j in dataSources['tasklist']) {
-        if (dataSources['tasklist'][j] === thisTasklist) {
-            modalDataObject['tasklist'] = j;
+    for (var j in dataSources['projectid']) {
+        if (dataSources['projectid'][j] === thisProjectid) {
+            modalDataObject['projectid'] = j;
         }
     }
     for (var k in dataSources['responsible']) {
@@ -401,7 +390,7 @@ function toggleModal() {
 function setDataInModal(modalDataObject) {
     $('#priority').val(modalDataObject["priority"]);
     $('#deadline').data("DateTimePicker").date(modalDataObject['deadlinedate']);
-    $("#tasklist").val(modalDataObject["tasklist"]);
+    $("#projectid").val(modalDataObject["projectid"]);
     $("#title").val(modalDataObject["title"]);
     $('#description').val(modalDataObject['description']);
     $("#responsible").val(modalDataObject["responsible"]);
@@ -416,9 +405,9 @@ function getPriorityIDfromValue(priority) {
     }
 }
 
-function getTasklistIDfromValue(tasklist) {
-    for (var x in dataSources['tasklist']) {
-        if (dataSources['tasklist'][x] === tasklist) {
+function getProjectIDfromValue(projectid) {
+    for (var x in dataSources['projectid']) {
+        if (dataSources['projectid'][x] === projectid) {
             return x;
         }
     }
@@ -443,14 +432,14 @@ function generateSelectOptionsForPriority() {
     }
 }
 
-function generateSelectOptionsForTasklist() {
-    var tasklistSelect = $("#tasklist");
-    tasklistSelect.find("option").remove().end();
-    for (var x in dataSources['tasklist']) {
+function generateSelectOptionsForProjectList() {
+    var projectSelect = $("#projectid");
+    projectSelect.find("option").remove().end();
+    for (var x in dataSources['projectlist']) {
         var opt = document.createElement('option');
         opt.value = x;
-        opt.innerHTML = dataSources['tasklist'][x];
-        tasklistSelect.append(opt);
+        opt.innerHTML = dataSources['projectlist'][x];
+        projectSelect.append(opt);
     }
 }
 
@@ -469,7 +458,7 @@ function initializeEditables() {
 
     generateSelectOptionsForPriority();
 
-    generateSelectOptionsForTasklist();
+    generateSelectOptionsForProjectList();
 
     generateSelectOptionsForResponsible();
 }
@@ -566,7 +555,7 @@ function onGetInitSuccess(data) {
             {"data": "deadlinedate"},
             {"data": "responsible_text"},
             {"data": "author_text"},
-            {"data": "tasklist_text"},
+            {"data": "projectid_text"},
             {"data": "priority_text"}
         ],
         "order": [[3, "desc"]]
