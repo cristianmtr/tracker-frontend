@@ -174,9 +174,9 @@ function submitTaskFromModal() {
             }
         }
     );
-    var url = "/task/";
+    var url = "/tasks/";
     if (thisItemId !== -1) {
-        url = "/task/" + thisItemId;
+        url = "/tasks/" + thisItemId;
     }
     console.log("submit to " + url);
     $.ajax({
@@ -184,6 +184,7 @@ function submitTaskFromModal() {
         type: 'POST',
         data: dataToSubmit,
         contentType: "application/json; charset=utf-8",
+        headers: {"Authorization": "Bearer " + docCookies.getItem('token')},
         success: function (response) {
             submitTaskSuccessCallback(response, thisItemId, data);
         }
@@ -362,21 +363,21 @@ function updateDataInModalFromId() {
     var modalDataObject = table.row("#" + currentItemId).data();
     setDataInModal(modalDataObject);
     $.ajax({
-        url: '/task/' + currentItemId + '/comments',
+        url: '/tasks/' + currentItemId + '/comments',
         async: true,
         dataType: 'json',
+        headers: {"Authorization": "Bearer " + docCookies.getItem('token')},
         success: function (comments) {
-            comments = comments['data'];
             console.log("got comments from server: " + JSON.stringify(comments));
             fillCommentSection(comments);
         }
     });
     $.ajax({
-        url: '/task/' + currentItemId + '/history',
+        url: '/tasks/' + currentItemId + '/history',
         async: true,
         dataType: 'json',
+        headers: {"Authorization": "Bearer " + docCookies.getItem('token')},
         success: function (historyEntries) {
-            historyEntries = historyEntries['data'];
             console.log("got history from server: " + JSON.stringify(historyEntries));
             fillHistorySection(historyEntries);
         }
@@ -467,7 +468,7 @@ function fillCommentSection(comments) {
     var commentsContainer = $("#commentsList");
     commentsContainer.html("");
     for (var i in comments) {
-        var cmdiv = '<div class="row task-modal-list-item">' + dataSources['responsible'][comments[i].author_id] + ", at " + comments[i].postDate + "</div>";
+        var cmdiv = '<div class="row task-modal-list-item">' + dataSources['responsible'][comments[i].memberid] + ", at " + new moment(comments[i].postdate).format("YYYY-MM-DD, HH:MM") + "</div>";
         cmdiv += "<div class='row'>" + comments[i].body + "</div>";
         commentsContainer.append(cmdiv);
         //(cmdiv);
@@ -480,7 +481,7 @@ function fillHistorySection(historyEntries) {
     historyContainer.html("");
     for (var i in historyEntries) {
         var hsdiv = '<div class="row task-modal-list-item">';
-        hsdiv += "Set to " + parseInt(historyEntries[i].statusKey) * 20 + "% by " + dataSources['responsible'][historyEntries[i].memberId] + " at " + historyEntries[i].statusDate;
+        hsdiv += "Set to " + parseInt(historyEntries[i].statuskey) * 20 + "% by " + dataSources['responsible'][historyEntries[i].memberid] + " at " +  new moment(historyEntries[i].statusDate).format("YYYY-MM-DD, HH:MM");
         hsdiv += '</div>';
         historyContainer.append(hsdiv);
     }
