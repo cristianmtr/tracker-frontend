@@ -1,4 +1,3 @@
-- deadline as pretty date;
-	- deadline_text;
 - check input on submit:
 	- MUST have projecid;
+
