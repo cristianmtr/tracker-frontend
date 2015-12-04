@@ -2,6 +2,10 @@ div#authmessage {
     color: red;
 }
 
+ul#commentSection {
+    padding-left: 0px;
+}
+
 .newcomment {
     padding-top: 10px;
     width: 95%;
@@ -11,7 +15,7 @@ div#authmessage {
     padding-bottom: 3px;
 }
 
-.newcomment > div > li{
+.newcomment > div > li {
     position: relative;
     left: 91%;
 }
@@ -83,7 +87,7 @@ table.dataTable td {
 }
 
 .countTable table tr td:nth-child(6), thead th:nth-child(6) {
-   width: 10%;
+    width: 10%;
     max-width: 10%;
 }
 
@@ -93,6 +97,6 @@ table.dataTable td {
 }
 
 .countTable table tr td:nth-child(8), thead th:nth-child(8) {
-  width: 10%;
+    width: 10%;
     max-width: 10%;
 }

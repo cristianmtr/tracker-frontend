@@ -1,3 +1,5 @@
+"use strict";
+
 var table;
 
 // this will be used for submitsubmitting POST data to server
@@ -18,7 +20,8 @@ const newItemForModal = {
     'projectid': "1"
 };
 
-var globalDataSources;
+var dataSet;
+var dataSources;
 
 function setUItoLoggedOut() {
     docCookies.removeItem("username");
@@ -51,6 +54,43 @@ function logOut() {
     location.reload(true);
 }
 
+function submitNewComment() {
+    var url = "/tasks/" + currentItemId + "/comments";
+    var dataToSubmit = {
+        "itemcommentid" : null,
+        "itemid" : null,
+        "memberid" : null,
+        "postdate" : new moment().format(""),
+        "body" : $("#newcomment").val(),
+        "lastchangedate" : null
+    };
+
+    function submitCommentFail(xhr, textStatus, thrownError) {
+        console.log(textStatus + " while posting comment");
+        alertModal(textStatus + " while posting comment");
+    }
+
+    function submitCommentSuccessCallback(response, textStatus, request, data) {
+        console.log(textStatus + " posting comment ");
+        data['memberid'] = getMemberIDfromValue(docCookies.getItem("username"));
+        addNewCommentToList(data);
+    }
+
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: JSON.stringify(dataToSubmit),
+        contentType: "application/json; charset=utf-8",
+        headers: {"Authorization": "Bearer " + docCookies.getItem('token')},
+        success: function (response, textStatus, request) {
+            submitCommentSuccessCallback(response, textStatus, request, dataToSubmit);
+        },
+        error: function (xhr, textStatus, thrownError) {
+            submitCommentFail(xhr, textStatus, thrownError);
+        }
+    });
+}
+
 function prepareModalForNewTask() {
     currentItemId = -1;
     setDataInModal(newItemForModal);
@@ -59,7 +99,7 @@ function prepareModalForNewTask() {
 }
 
 function setUItoLoggedIn() {
-    username = docCookies.getItem("username");
+    var username = docCookies.getItem("username");
     $("#userstatus").text(username);
     $("#authHolder").hide();
     $("#loggedInAs").text("Logged in as " + username);
@@ -308,10 +348,10 @@ function setDataInRowById(DT_RowId, dataObject) {
 }
 
 function iterateDataSources() {
-    for (var key in globalDataSources) {
-        if (globalDataSources.hasOwnProperty(key)) {
-            console.log(key + " -> " + globalDataSources[key]);
-            var subobj = globalDataSources[key];
+    for (var key in dataSources) {
+        if (dataSources.hasOwnProperty(key)) {
+            console.log(key + " -> " + dataSources[key]);
+            var subobj = dataSources[key];
             for (var subkey in subobj) {
                 if (subobj.hasOwnProperty(subkey)) {
                     console.log(subkey + " -> " + subobj[subkey]);
@@ -461,17 +501,22 @@ function initializeEditables() {
     generateSelectOptionsForResponsible();
 }
 
+function addNewCommentToList(comment) {
+    var commentsContainer = $("#commentsList");
+    var cmdiv = '<div class="row task-modal-list-item">' + dataSources['responsible'][comment.memberid] + ", at " + new moment(comment.postdate).format("YYYY-MM-DD, HH:MM") + "</div>";
+    cmdiv += "<div class='row'>" + comment.body + "</div>";
+    commentsContainer.append(cmdiv);
+}
+
 function fillCommentSection(comments) {
     var commentsContainer = $("#commentsList");
     commentsContainer.html("");
     for (var i in comments) {
-        var cmdiv = '<div class="row task-modal-list-item">' + dataSources['responsible'][comments[i].memberid] + ", at " + new moment(comments[i].postdate).format("YYYY-MM-DD, HH:MM") + "</div>";
-        cmdiv += "<div class='row'>" + comments[i].body + "</div>";
-        commentsContainer.append(cmdiv);
-        //(cmdiv);
+        addNewCommentToList(comments[i]);
     }
+    var commentSection = $("#newComment");
     var newCommentDiv = '<div class="newcomment">\n    <div class="row">New comment</div>\n    <div class="row"><textarea style="resize:none" rows="5" cols="30" id="newcomment" class="form-control"></textarea>\n    </div>\n    <div>\n        <li button type="button" class="btn btn-primary" onclick="submitNewComment();">\n            Send\n        </li>\n    </div>\n</div>';
-    commentsContainer.append(newCommentDiv);
+    commentSection.html(newCommentDiv);
 }
 
 function fillHistorySection(historyEntries) {
@@ -580,7 +625,7 @@ function onGetInitSuccess(data) {
         });
     });
 
-    globalDataSources = dataSources;
+    dataSources = dataSources;
     initializeEditables();
 
     $("body").removeClass("loading");
