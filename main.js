@@ -42,22 +42,13 @@ function logoutSuccessCallback(response) {
 }
 
 function logOut() {
-    // send POST to /auth
-    // auth deletes session
-    // returns success
-    var dataToSubmit = JSON.stringify(
-        {
-            "username": docCookies.getItem("username"),
-            "token": docCookies.getItem("token")
-        }
-    );
-    $.ajax({
-        url: '/logout',
-        type: 'POST',
-        data: dataToSubmit,
-        contentType: "application/json; charset=utf-8",
-        success: logoutSuccessCallback
-    });
+    /*
+    delete cookies for auth.
+    reload page
+     */
+    docCookies.removeItem("username");
+    docCookies.removeItem("token");
+    location.reload(true);
 }
 
 function prepareModalForNewTask() {
