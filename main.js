@@ -73,7 +73,7 @@ function submitNewComment() {
     function submitCommentSuccessCallback(response, textStatus, request, data) {
         console.log(textStatus + " posting comment ");
         data['memberid'] = getMemberIDfromValue(docCookies.getItem("username"));
-        addNewCommentToList(data);
+        addNewCommentToList(data, true);
     }
 
     $.ajax({
@@ -501,18 +501,23 @@ function initializeEditables() {
     generateSelectOptionsForResponsible();
 }
 
-function addNewCommentToList(comment) {
+function addNewCommentToList(comment, fromPosting) {
     var commentsContainer = $("#commentsList");
     var cmdiv = '<div class="row task-modal-list-item">' + dataSources['responsible'][comment.memberid] + ", at " + new moment(comment.postdate).format("YYYY-MM-DD, HH:MM") + "</div>";
     cmdiv += "<div class='row'>" + comment.body + "</div>";
-    commentsContainer.append(cmdiv);
+    if (fromPosting === true){
+        commentsContainer.prepend(cmdiv);
+    }
+    else {
+        commentsContainer.append(cmdiv);
+    }
 }
 
 function fillCommentSection(comments) {
     var commentsContainer = $("#commentsList");
     commentsContainer.html("");
     for (var i in comments) {
-        addNewCommentToList(comments[i]);
+        addNewCommentToList(comments[i], false);
     }
     var commentSection = $("#newComment");
     var newCommentDiv = '<div class="newcomment">\n    <div class="row">New comment</div>\n    <div class="row"><textarea style="resize:none" rows="5" cols="30" id="newcomment" class="form-control"></textarea>\n    </div>\n    <div>\n        <li button type="button" class="btn btn-primary" onclick="submitNewComment();">\n            Send\n        </li>\n    </div>\n</div>';
