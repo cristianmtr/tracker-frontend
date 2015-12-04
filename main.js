@@ -46,23 +46,60 @@ function logoutSuccessCallback(response) {
 
 function logOut() {
     /*
-    delete cookies for auth.
-    reload page
+     delete cookies for auth.
+     reload page
      */
     docCookies.removeItem("username");
     docCookies.removeItem("token");
     location.reload(true);
 }
 
+function submitNewHistory() {
+    function submitHistorySuccessCallback(response, textStatus, request, dataToSubmit) {
+        console.log(textStatus + " while posting history");
+        dataToSubmit['memberid'] = getMemberIDfromValue(docCookies.getItem("username"));
+        addNewHistoryToList(dataToSubmit, true);
+    }
+
+    function submitHistoryFail(xhr, textStatus, thrownError) {
+        console.log(textStatus + " while posting history");
+        alertModal(textStatus + " while updating task status.");
+    }
+
+    var url = "/tasks/" + currentItemId + "/history";
+    var dataToSubmit = {
+        "itemstatusid": null,
+        "itemid": null,
+        "statusdate": new moment().format(""),
+        "statuskey": $("#newStatusNumber").val(),
+        "memberid": null,
+    };
+    $.ajax({
+            url: url,
+            type: 'POST',
+            data: JSON.stringify(dataToSubmit),
+            contentType: "application/json; charset=utf-8",
+            headers: {"Authorization": "Bearer " + docCookies.getItem('token')},
+            success: function (response, textStatus, request) {
+                submitHistorySuccessCallback(response, textStatus, request, dataToSubmit);
+            },
+            error: function (xhr, textStatus, thrownError) {
+                submitHistoryFail(xhr, textStatus, thrownError);
+            }
+        }
+    )
+
+}
+
 function submitNewComment() {
     var url = "/tasks/" + currentItemId + "/comments";
     var dataToSubmit = {
-        "itemcommentid" : null,
-        "itemid" : null,
-        "memberid" : null,
-        "postdate" : new moment().format(""),
-        "body" : $("#newcomment").val(),
-        "lastchangedate" : null
+        "itemcommentid": null,
+        "itemid": null,
+        "memberid": null,
+        "postdate": new moment().format(""),
+        "body": $("#newcomment").val(),
+        "lastchangedate": null
     };
 
     function submitCommentFail(xhr, textStatus, thrownError) {
@@ -505,7 +542,7 @@ function addNewCommentToList(comment, fromPosting) {
     var commentsContainer = $("#commentsList");
     var cmdiv = '<div class="row task-modal-list-item">' + dataSources['responsible'][comment.memberid] + ", at " + new moment(comment.postdate).format("YYYY-MM-DD, HH:MM") + "</div>";
     cmdiv += "<div class='row'>" + comment.body + "</div>";
-    if (fromPosting === true){
+    if (fromPosting === true) {
         commentsContainer.prepend(cmdiv);
     }
     else {
@@ -524,14 +561,9 @@ function fillCommentSection(comments) {
 function addNewHistoryToList(history, fromPosting) {
     var historyContainer = $("#historyList");
     var hsdiv = '<div class="row task-modal-list-item">';
-    hsdiv += "Set to " + parseInt(history.statuskey) * 20 + "% by " + dataSources['responsible'][history.memberid] + " at " + new moment(history.statusDate).format("YYYY-MM-DD, HH:MM");
+    hsdiv += "Set to " + parseInt(history.statuskey) * 20 + "% by " + dataSources['responsible'][history.memberid] + " at " + new moment(history.statusdate).format("YYYY-MM-DD, HH:mm");
     hsdiv += '</div>';
-    if (fromPosting === true) {
-        historyContainer.prepend(hsdiv);
-    }
-    else {
-        historyContainer.append(hsdiv);
-    }
+    historyContainer.prepend(hsdiv);
 }
 
 function fillHistorySection(historyEntries) {
