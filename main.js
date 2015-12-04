@@ -11,11 +11,11 @@ var logInProcess = false;
 const newItemForModal = {
     'title': '',
     'deadlinedate': new moment().format("YYYY-MM-DD"),
-    'priority': "Normal",
+    'priority': "4",
     'responsible': '',
     'description': '',
     'author': '',
-    'projectid': "General OPS"
+    'projectid': "1"
 };
 
 var globalDataSources;
@@ -54,6 +54,7 @@ function logOut() {
 function prepareModalForNewTask() {
     currentItemId = -1;
     setDataInModal(newItemForModal);
+    $("#responsible").val(getMemberIDfromValue(docCookies.getItem("username")));
     $("#content").hide();
 }
 
