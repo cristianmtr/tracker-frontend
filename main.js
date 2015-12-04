@@ -470,7 +470,8 @@ function fillCommentSection(comments) {
         commentsContainer.append(cmdiv);
         //(cmdiv);
     }
-
+    var newCommentDiv = '<div class="newcomment">\n    <div class="row">New comment</div>\n    <div class="row"><textarea style="resize:none" rows="5" cols="30" id="newcomment" class="form-control"></textarea>\n    </div>\n    <div>\n        <li button type="button" class="btn btn-primary" onclick="submitNewComment();">\n            Send\n        </li>\n    </div>\n</div>';
+    commentsContainer.append(newCommentDiv);
 }
 
 function fillHistorySection(historyEntries) {
