@@ -2,7 +2,13 @@ div#authmessage {
     color: red;
 }
 
-div#commentSection, div#historySection {
+table#historySection {
+    width: 100%;
+    position: relative;
+    left: 5%;
+}
+
+div#commentSection {
     padding-left: 30px;
 }
 
