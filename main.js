@@ -519,21 +519,27 @@ function fillCommentSection(comments) {
     for (var i in comments) {
         addNewCommentToList(comments[i], false);
     }
-    var commentSection = $("#newComment");
-    var newCommentDiv = '<div class="newcomment">\n    <div class="row">New comment</div>\n    <div class="row"><textarea style="resize:none" rows="5" cols="30" id="newcomment" class="form-control"></textarea>\n    </div>\n    <div>\n        <li button type="button" class="btn btn-primary" onclick="submitNewComment();">\n            Send\n        </li>\n    </div>\n</div>';
-    commentSection.html(newCommentDiv);
+}
+
+function addNewHistoryToList(history, fromPosting) {
+    var historyContainer = $("#historyList");
+    var hsdiv = '<div class="row task-modal-list-item">';
+    hsdiv += "Set to " + parseInt(history.statuskey) * 20 + "% by " + dataSources['responsible'][history.memberid] + " at " + new moment(history.statusDate).format("YYYY-MM-DD, HH:MM");
+    hsdiv += '</div>';
+    if (fromPosting === true) {
+        historyContainer.prepend(hsdiv);
+    }
+    else {
+        historyContainer.append(hsdiv);
+    }
 }
 
 function fillHistorySection(historyEntries) {
     var historyContainer = $("#historyList");
     historyContainer.html("");
     for (var i in historyEntries) {
-        var hsdiv = '<div class="row task-modal-list-item">';
-        hsdiv += "Set to " + parseInt(historyEntries[i].statuskey) * 20 + "% by " + dataSources['responsible'][historyEntries[i].memberid] + " at " + new moment(historyEntries[i].statusDate).format("YYYY-MM-DD, HH:MM");
-        hsdiv += '</div>';
-        historyContainer.append(hsdiv);
+        addNewHistoryToList(historyEntries[i], false);
     }
-
 }
 
 function checkTokenAndUsernameCombinationCallback(response) {

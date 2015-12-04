@@ -2,11 +2,11 @@ div#authmessage {
     color: red;
 }
 
-div#commentSection {
+div#commentSection, div#historySection {
     padding-left: 30px;
 }
 
-.newcomment {
+.newcomment, .newhistory {
     padding-top: 10px;
     width: 95%;
 }

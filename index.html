@@ -199,14 +199,48 @@
                             <div class="tab-pane active" id="comments">
                                 <div id="commentSection">
                                     <div id="commentsList"></div>
-                                    <div id="newComment"></div>
+
+                                    <div class="newcomment">
+                                        <div class="row">New comment</div>
+                                        <div class="row"><textarea style="resize:none" rows="5" cols="30"
+                                                                   id="newcomment" class="form-control"></textarea>
+                                        </div>
+                                        <div>
+                                            <li button type="button" class="btn btn-primary"
+                                                onclick="submitNewComment();">
+                                                Send
+                                            </li>
+                                        </div>
+                                    </div>
                                 </div>
+
                             </div>
                             <div class="tab-pane" id="history">
-                                <ul id="historySection">
-                                    <ul id="historyList"></ul>
-                                    <ul id="newHistory"></ul>
-                                </ul>
+                                <divs id="historySection">
+                                    <div id="historyList"></div>
+                                    <div class="newhistory">
+                                        <form>
+                                            <div style="display:inline-block;
+  /*margin:0 10px 10px 0;*/
+  *display:inline;
+  zoom:1;">
+                                                <label for="newStatusNumber" style="padding-right: 5px;">Set to </label><select
+                                                    id="newStatusNumber">
+                                                <option value="0">0%</option>
+                                                <option value="1">20%</option>
+                                                <option value="2">40%</option>
+                                                <option value="3">60%</option>
+                                                <option value="4">80%</option>
+                                                <option value="5">100%</option>
+                                            </select>
+                                                <li button type="button" class="btn btn-primary"
+                                                    onclick="submitNewHistory();">
+                                                    Send
+                                                </li>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
