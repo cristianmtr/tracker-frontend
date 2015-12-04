@@ -2,8 +2,8 @@ div#authmessage {
     color: red;
 }
 
-ul#commentSection {
-    padding-left: 0px;
+div#commentSection {
+    padding-left: 30px;
 }
 
 .newcomment {
