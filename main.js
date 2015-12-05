@@ -207,7 +207,7 @@ function submitTaskFromModal() {
         'projectid': $('#projectid').val(),
         'description': $('#description').val(),
         'memberid': $('#responsible').val(),
-        'author': $('#author').val()
+        'authorid': $('#author').val()
     };
     var dataToSubmit = JSON.stringify(data);
     var url = "/tasks/";
@@ -226,7 +226,7 @@ function submitTaskFromModal() {
                 // created task from the response
                 thisItemId = response['id'];
                 dataToSubmit['id'] = thisItemId;
-                dataToSubmit['authorid'] = dataSources['responsible'];
+                dataToSubmit['authorid'] = getMemberIDfromValue(docCookies.getItem("username"));
                 addNewRow(thisItemId, dataToSubmit);
             }
             else {
