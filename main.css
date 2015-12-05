@@ -1,4 +1,4 @@
-.create-new{
+#create-new{
 	background-color: dodgerblue;
     height: 4em;
     width: 4em;
@@ -7,7 +7,19 @@
     color:  white;
     font-weight:  bold;
 	float: right;
-	margin-right: 1em;
+	margin: 1em;
+}
+
+#userstatus {
+	margin: 1em;
+}
+
+#example_length {
+	margin-left: 1em;
+}
+
+#example_info {
+	margin-left: 1em;
 }
 
 .dataTables_paginate {
