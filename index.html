@@ -30,16 +30,12 @@
     <script src="frontend/main.js"></script>
 </head>
 <body>
-<div class="row">
-    <div class="col-md-12">
+<div>
+    <div>
         <!-- button for creating new task -->
-        <ul class="row nav nav-pills nav-justified">
-            <li button type="button" class="btn btn-primary btn-lg" data-toggle="modal"
-                onclick="prepareModalForNewTask();"
-                data-target="#createNewModal">
-                Create new
-            </li>
-        </ul>
+        <div class="create-new">
+            <p style="font-size: 3em;">+</p>
+        </div>
 
         <div id="foo" class="loadingmodal"></div>
 
@@ -219,7 +215,7 @@
                                 <table id="historySection">
                                     <tr style="width:100%;">
                                     <td style="width: 60%;" id="historyList"></td>
-                                    <td style="width: 40%;" class="newhistory">
+                                    <td style="width: 40%;vertical-align:  top;padding-top:  10px;" class="newhistory">
                                         <form>
                                             <div style="display:inline-block;
   /*margin:0 10px 10px 0;*/
