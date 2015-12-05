@@ -540,7 +540,7 @@ function initializeEditables() {
 
 function addNewCommentToList(comment, fromPosting) {
     var commentsContainer = $("#commentsList");
-    var cmdiv = '<div class="row task-modal-list-item">' + dataSources['responsible'][comment.memberid] + ", at " + new moment(comment.postdate).format("YYYY-MM-DD, HH:MM") + "</div>";
+    var cmdiv = '<div class="row task-modal-list-item">' + dataSources['responsible'][comment.memberid] + ", at " + new moment(comment.postdate).format("YYYY-MM-DD, HH:mm") + "</div>";
     cmdiv += "<div class='row'>" + comment.body + "</div>";
     if (fromPosting === true) {
         commentsContainer.prepend(cmdiv);
