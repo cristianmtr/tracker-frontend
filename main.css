@@ -111,6 +111,15 @@ table.dataTable td {
     min-width: 0.2em;
 }
 
+.countTable table tr td:nth-child(1) {
+    cursor: pointer;
+    background-color: #D1E3E8;
+}
+
+.countTable table tr td:nth-child(1):hover {
+    background-color: #B6D1D9;
+}
+
 .countTable table tr td:nth-child(2), thead th:nth-child(2) {
     /*color: yellow;*/
     width: 13%; /*2*/

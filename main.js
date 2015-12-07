@@ -399,7 +399,7 @@ function iterateDataSources() {
 }
 
 function onClickTableRow(e) {
-    currentItemId = e.id;
+    currentItemId = e.innerText;
     console.log('clicked on row with id ', currentItemId);
     updateDataInModalFromId();
     toggleModal();
@@ -655,7 +655,7 @@ function onGetInitSuccess(data) {
     setUItoLoggedIn();
 
     //on click functionality
-    $('#example tbody').on('click', 'tr', function () {
+    $(".countTable table tr td:nth-child(1)").on('click', this, function () {
         onClickTableRow(this);
     });
 
