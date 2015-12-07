@@ -114,6 +114,8 @@ table.dataTable td {
 .countTable table tr td:nth-child(1) {
     cursor: pointer;
     background-color: #D1E3E8;
+    border-radius: 10px;
+    border: 0.1em inset;
 }
 
 .countTable table tr td:nth-child(1):hover {
