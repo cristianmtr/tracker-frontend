@@ -162,6 +162,7 @@ function authenticationResponseHandler(response, username) {
         logInProcess = false;
         $("#authModal button.close").show();
         $("#authModal button.btn-default").show();
+        $(".countTable").show();
         loadDocument();
     }
 
@@ -725,6 +726,7 @@ function startLoginProc() {
     setUItoLoggedOut();
     $("#authModal button.close").hide()
     $("#authModal button.btn-default").hide();
+    $(".countTable").hide();
     $("#authModal").modal({
         backdrop: 'static',
         keyboard: false
