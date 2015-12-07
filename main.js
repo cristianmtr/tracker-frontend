@@ -648,7 +648,9 @@ function onGetInitSuccess(data) {
         "order": [[3, "desc"]]
     });
 
-    $("div.toolbar").html('<button id="userstatus" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#authModal">Not logged in</button><div id="otherdiv"></div>');
+    $("div.toolbar").html('<button id="userstatus" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#authModal">Not logged in</button><div id="otherdiv"></div><div id="create-new" onclick="prepareModalForNewTask();"></div>');
+
+    $("#create-new").html('<p style="font-size: 3em;">+</p>');
 
     setUItoLoggedIn();
 

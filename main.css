@@ -6,20 +6,27 @@
     text-align:  center;
     color:  white;
     font-weight:  bold;
-	float: right;
+	float: left;
 	margin: 1em;
+}
+
+.toolbar {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }
 
 #userstatus {
 	margin: 1em;
+    float: left;
 }
 
-#example_length {
+#example_length, #example_info  {
 	margin-left: 1em;
 }
 
-#example_info {
-	margin-left: 1em;
+#example_filter {
+    margin-right: 1em;
 }
 
 .dataTables_paginate {

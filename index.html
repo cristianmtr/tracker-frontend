@@ -32,11 +32,6 @@
 <body>
 <div>
     <div>
-        <!-- button for creating new task -->
-        <div id="create-new" onclick="prepareModalForNewTask();">
-            <p style="font-size: 3em;">+</p>
-        </div>
-
         <div id="foo" class="loadingmodal"></div>
 
         <!-- Modal for authentication -->
@@ -214,29 +209,31 @@
                             <div class="tab-pane" id="history">
                                 <table id="historySection">
                                     <tr style="width:100%;">
-                                    <td style="width: 60%;" id="historyList"></td>
-                                    <td style="width: 40%;vertical-align:  top;padding-top:  10px;" class="newhistory">
-                                        <form>
-                                            <div style="display:inline-block;
+                                        <td style="width: 60%;" id="historyList"></td>
+                                        <td style="width: 40%;vertical-align:  top;padding-top:  10px;"
+                                            class="newhistory">
+                                            <form>
+                                                <div style="display:inline-block;
   /*margin:0 10px 10px 0;*/
   *display:inline;
   zoom:1;">
-                                                <label for="newStatusNumber" style="padding-right: 5px;">Set to </label><select
-                                                    id="newStatusNumber">
-                                                <option value="0">0%</option>
-                                                <option value="1">20%</option>
-                                                <option value="2">40%</option>
-                                                <option value="3">60%</option>
-                                                <option value="4">80%</option>
-                                                <option value="5">100%</option>
-                                            </select>
-                                                <li button type="button" class="btn btn-primary"
-                                                    onclick="submitNewHistory();">
-                                                    Send
-                                                </li>
-                                            </div>
-                                        </form>
-                                    </td>
+                                                    <label for="newStatusNumber" style="padding-right: 5px;">Set
+                                                        to </label><select
+                                                        id="newStatusNumber">
+                                                    <option value="0">0%</option>
+                                                    <option value="1">20%</option>
+                                                    <option value="2">40%</option>
+                                                    <option value="3">60%</option>
+                                                    <option value="4">80%</option>
+                                                    <option value="5">100%</option>
+                                                </select>
+                                                    <li button type="button" class="btn btn-primary"
+                                                        onclick="submitNewHistory();">
+                                                        Send
+                                                    </li>
+                                                </div>
+                                            </form>
+                                        </td>
                                     </tr>
                                 </table>
                             </div>
