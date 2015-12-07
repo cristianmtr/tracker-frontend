@@ -655,7 +655,7 @@ function onGetInitSuccess(data) {
     setUItoLoggedIn();
 
     //on click functionality
-    $(".countTable table tr td:nth-child(1)").on('click', this, function () {
+    $(".countTable table").on('click', "tr td:nth-child(1)", function () {
         onClickTableRow(this);
     });
 
