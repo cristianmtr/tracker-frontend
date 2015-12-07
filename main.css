@@ -1,5 +1,5 @@
 #create-new{
-	background-color: dodgerblue;
+	background-color: #337ab7;
     height: 4em;
     width: 4em;
     border-radius:  50%;
@@ -8,6 +8,11 @@
     font-weight:  bold;
 	float: left;
 	margin: 1em;
+    cursor: pointer;
+}
+
+#create-new:hover {
+    background-color: #245580;
 }
 
 .toolbar {
@@ -101,8 +106,9 @@ table.dataTable td {
 
 .countTable table tr td:nth-child(1), thead th:nth-child(1) {
     /*color: yellow;*/
-    width: 3%; /* 2 */
-    max-width: 3%;
+    width: 0.2em; /* 2 */
+    max-width: 0.2em;
+    min-width: 0.2em;
 }
 
 .countTable table tr td:nth-child(2), thead th:nth-child(2) {
