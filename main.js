@@ -160,6 +160,8 @@ function authenticationResponseHandler(response, username) {
         //    keyboard: true
         //});
         logInProcess = false;
+        $("#authModal button.close").show();
+        $("#authModal button.btn-default").show();
         loadDocument();
     }
 
@@ -721,6 +723,8 @@ function loadDocument() {
 function startLoginProc() {
     logInProcess = true;
     setUItoLoggedOut();
+    $("#authModal button.close").hide()
+    $("#authModal button.btn-default").hide();
     $("#authModal").modal({
         backdrop: 'static',
         keyboard: false
