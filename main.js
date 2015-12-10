@@ -23,6 +23,38 @@ const newItemForModal = {
 var dataSet;
 var dataSources;
 
+function deleteTask() {
+    var itemid = currentItemId;
+    var url = "/tasks/" + currentItemId;
+
+    function deleteTaskSuccessCallback(response, textStatus, request) {
+        // delete task from table
+        // close modal
+        table.row("#" + itemid).remove().draw();
+        toggleModal();
+    }
+
+    function deleteTaskFailCallback(xhr, textStatus, thrownError) {
+        console.log(thrownError + " when attempting delete");
+        alertModal("Error when deleting task: "+thrownError);
+    }
+
+    $.ajax({
+            url: url,
+            type: 'DELETE',
+            contentType: "application/json; charset=utf-8",
+            headers: {"Authorization": "Bearer " + docCookies.getItem('token')},
+            success: function (response, textStatus, request) {
+                deleteTaskSuccessCallback(response, textStatus, request);
+            },
+            error: function (xhr, textStatus, thrownError) {
+                deleteTaskFailCallback(xhr, textStatus, thrownError);
+            }
+        }
+    )
+
+}
+
 function setUItoLoggedOut() {
     docCookies.removeItem("username");
     docCookies.removeItem("token");
@@ -63,7 +95,7 @@ function submitNewHistory() {
 
     function submitHistoryFail(xhr, textStatus, thrownError) {
         console.log(textStatus + " while posting history");
-        alertModal(textStatus + " while updating task status.");
+        alertModal(textStatus + " while updating task status: "+thrownError);
     }
 
     var url = "/tasks/" + currentItemId + "/history";
@@ -131,6 +163,8 @@ function submitNewComment() {
 function prepareModalForNewTask() {
     currentItemId = -1;
     setDataInModal(newItemForModal);
+    // hide delete button
+    $("#deletebutton").hide();
     $("#responsible").val(getMemberIDfromValue(docCookies.getItem("username")));
     $("#content").hide();
 }
@@ -407,6 +441,7 @@ function onClickTableRow(e) {
     updateDataInModalFromId();
     toggleModal();
     $("#content").show();
+    $("#deletebutton").show();
 }
 
 function replaceValuesWithIds(modalDataObject) {
