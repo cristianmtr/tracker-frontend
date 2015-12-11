@@ -1,17 +1,23 @@
-#alertMessage{
+#alertMessage {
     margin-left: 1em;
 }
 
-#create-new{
-	background-color: #337ab7;
+#authmessage {
+    margin-left: 1em;
+    margin-bottom: 1em;
+    font-style: italic;
+}
+
+#create-new {
+    background-color: #337ab7;
     height: 4em;
     width: 4em;
-    border-radius:  50%;
-    text-align:  center;
-    color:  white;
-    font-weight:  bold;
-	float: left;
-	margin: 1em;
+    border-radius: 50%;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    float: left;
+    margin: 1em;
     cursor: pointer;
 }
 
@@ -26,12 +32,12 @@
 }
 
 #userstatus {
-	margin: 1em;
+    margin: 1em;
     float: left;
 }
 
-#example_length, #example_info  {
-	margin-left: 1em;
+#example_length, #example_info {
+    margin-left: 1em;
 }
 
 #example_filter {
@@ -39,7 +45,7 @@
 }
 
 .dataTables_paginate {
-	padding-right: 1em;
+    padding-right: 1em;
 }
 
 div#authmessage {
