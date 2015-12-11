@@ -206,13 +206,14 @@ function tryAuthenticate() {
     var username = $("#username").val();
     var password = $("#password").val();
     var encoded = btoa(username + ":" + password);
-    console.log(encoded);
+    console.log("base64 of username:password " + encoded);
     $("#authmessage").text("");
     $.ajax({
         url: '/users/token',
         type: 'GET',
         contentType: "application/json; charset=utf-8",
         headers: {"Authorization": "Basic " + encoded},
+        timeout: 3000,
         success: function (response) {
             authenticationResponseHandler(response, username);
         },
@@ -220,7 +221,7 @@ function tryAuthenticate() {
             // add some red text html to the modal
             // saying 'try again'
             console.log(xhr, textStatus, thrownError);
-            $("#authmessage").text("Failure. Try again");
+            $("#authmessage").text("Failed acquiring token : " + thrownError);
         }
     });
 }
